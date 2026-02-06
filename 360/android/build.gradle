@@ -1,0 +1,55 @@
+// Top-level build file
+
+buildscript {
+    ext {
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 21
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+
+        if (System.properties['os.arch'] == "aarch64") {
+            ndkVersion = "24.0.8215888"
+        } else {
+            ndkVersion = "21.4.7075529"
+        }
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("de.undercouch:gradle-download-task:5.0.1")
+    }
+}
+
+ext {
+    ffmpegKitPackage = "full-gpl-lts"
+    set("ffmpegKit.android.lts.version", "6.0-2")
+    set("ffmpegKit.android.main.version", "6.0-2")
+}
+
+allprojects {
+    repositories {
+        // Prioriza Maven Central y añade mirrors
+        mavenCentral()
+        maven { url 'https://repo.maven.apache.org/maven2' }
+        maven { url 'https://maven-central.storage-download.googleapis.com/maven2' }
+        google()
+
+        // Repos de React Native
+        maven { url("$rootDir/../node_modules/react-native/android") }
+        maven { url("$rootDir/../node_modules/jsc-android/dist") }
+        maven { url "https://www.jitpack.io" }
+    }
+}
+
+// Fuerza la versión LTS de FFmpegKit a nivel de build
+configurations.all {
+    resolutionStrategy {
+        force "com.arthenica:ffmpeg-kit-full-gpl:6.0-2.LTS"
+    }
+}
