@@ -6,8 +6,12 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
+  PermissionsAndroid,
+  Platform,
+  Alert,
 } from 'react-native'
 import { launchCamera } from 'react-native-image-picker'
+import RNBlobUtil from 'react-native-blob-util'
 
 const templates = [
   { id: 1, name: 'Plantilla Tropical', image: require('../../assets/frames/frame1.png') },
@@ -34,16 +38,74 @@ const Record360 = ({ navigation }) => {
   }, [countdown])
 
   const grabarVideo = async () => {
+    if (Platform.OS === 'android') {
+      const permission =
+        Platform.Version >= 33
+          ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO
+          : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+
+      const granted = await PermissionsAndroid.request(permission)
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        Alert.alert('Permiso requerido', 'Necesitamos acceso a videos')
+        return
+      }
+    }
+
     const result = await launchCamera({
       mediaType: 'video',
       videoQuality: 'high',
       durationLimit: 30,
+      includeExtra: true,
+      saveToPhotos: true,
     })
 
     if (result.didCancel || !result.assets) return
 
+    const asset = result.assets[0]
+    if (!asset) return
+
+    const candidates = [asset.fileCopyUri, asset.originalPath, asset.uri].filter(
+      Boolean
+    )
+
+    const destDir = `${RNBlobUtil.fs.dirs.DocumentDir}/INMERSA360`
+    try {
+      const dirExists = await RNBlobUtil.fs.exists(destDir)
+      if (!dirExists) {
+        await RNBlobUtil.fs.mkdir(destDir)
+      }
+    } catch (e) {
+      // si no se puede crear, seguimos con la uri original
+    }
+
+    let finalPath = null
+    for (const candidate of candidates) {
+      const raw = candidate.startsWith('file://')
+        ? candidate.replace('file://', '')
+        : candidate
+      const dest = `${destDir}/video_${Date.now()}.mp4`
+      try {
+        await RNBlobUtil.fs.cp(raw, dest)
+        const exists = await RNBlobUtil.fs.exists(dest)
+        if (exists) {
+          finalPath = dest
+          break
+        }
+      } catch (e) {
+        // intenta con el siguiente candidato
+      }
+    }
+
+    if (!finalPath) {
+      Alert.alert('Error', 'No se pudo preparar el video')
+      return
+    }
+
+    const safeVideoUri = `file://${finalPath}`
     navigation.navigate('PreviewConfirm360', {
-      videoUri: result.assets[0].uri,
+      videoUri: safeVideoUri,
+      sourceUri: asset.originalPath,
+      fileCopyUri: asset.fileCopyUri,
       plantilla,
     })
   }

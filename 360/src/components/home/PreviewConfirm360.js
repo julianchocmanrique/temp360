@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native'
 import Video from 'react-native-video'
 
 const PreviewConfirm360 = ({ route, navigation }) => {
-  const { videoUri, plantilla } = route.params
+  const { videoUri, plantilla, sourceUri, fileCopyUri } = route.params
 
   return (
     <View style={styles.container}>
@@ -49,6 +49,8 @@ const PreviewConfirm360 = ({ route, navigation }) => {
           onPress={() =>
             navigation.navigate('Preview360', {
               videoUri,
+              sourceUri,
+              fileCopyUri,
               plantilla,
             })
           }

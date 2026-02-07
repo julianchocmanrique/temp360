@@ -7,14 +7,68 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  Share,
 } from 'react-native'
 import RNFS from 'react-native-fs'
 import { FFmpegKit } from 'ffmpeg-kit-react-native'
 
 const Preview360 = ({ route, navigation }) => {
   const videoUri = route?.params?.videoUri
+  const plantilla = route?.params?.plantilla
+  const sourceUri = route?.params?.sourceUri
+  const fileCopyUri = route?.params?.fileCopyUri
 
-  const guardarVideoConPlantilla = async () => {
+  const resolveVideoPath = async () => {
+    if (!videoUri) {
+      throw new Error('No hay video')
+    }
+
+    const raw = videoUri.startsWith('file://')
+      ? videoUri.replace('file://', '')
+      : videoUri
+
+    const exists = await RNFS.exists(raw)
+    if (!exists) {
+      throw new Error('Video no existe')
+    }
+    // En Android, FFmpegKit funciona mejor con esquema file://
+    return `file://${raw}`
+  }
+
+  const resolveTemplatePath = async () => {
+    const fallback = require('../../assets/fiestafondo.png')
+    const source = Image.resolveAssetSource(plantilla?.image || fallback)
+    const uri = source?.uri
+
+    if (!uri) {
+      throw new Error('No se pudo resolver la plantilla')
+    }
+
+    if (uri.startsWith('http')) {
+      const dest = `${RNFS.CachesDirectoryPath}/plantilla_${Date.now()}.png`
+      const download = RNFS.downloadFile({ fromUrl: uri, toFile: dest })
+      const result = await download.promise
+      if (result.statusCode !== 200) {
+        throw new Error('No se pudo descargar la plantilla')
+      }
+      return dest
+    }
+
+    if (uri.startsWith('file://')) {
+      return uri.replace('file://', '')
+    }
+
+    if (uri.startsWith('asset:/')) {
+      const assetPath = uri.replace('asset:/', '')
+      const dest = `${RNFS.CachesDirectoryPath}/plantilla_${Date.now()}.png`
+      await RNFS.copyFileAssets(assetPath, dest)
+      return dest
+    }
+
+    return uri
+  }
+
+  const guardarVideoConPlantilla = async ({ compartir } = {}) => {
     try {
       const dir =
         Platform.OS === 'android'
@@ -27,21 +81,28 @@ const Preview360 = ({ route, navigation }) => {
 
       const outputPath = `${dir}/INMERSA360_${Date.now()}.mp4`
 
-      const plantillaPath =
-        Platform.OS === 'android'
-          ? `${RNFS.DocumentDirectoryPath}/fiestafondo.png`
-          : `${RNFS.MainBundlePath}/fiestafondo.png`
+      const inputVideoPath = await resolveVideoPath()
+      const plantillaPath = await resolveTemplatePath()
 
-      const command = `
-        -i "${videoUri}"
-        -i "${plantillaPath}"
-        -filter_complex "overlay=0:0"
-        -c:a copy
-        -movflags +faststart
-        "${outputPath}"
-      `
+      const command = `-i "${inputVideoPath}" -loop 1 -i "${plantillaPath}" -filter_complex "[0:v]transpose=1,scale=1080:1920,setsar=1[base];[1:v]scale=1080:1920,format=rgba[ovr];[base][ovr]overlay=0:0:format=auto,format=yuv420p[v]" -map "[v]" -map 0:a? -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart -shortest "${outputPath}"`
 
-      await FFmpegKit.execute(command)
+      const session = await FFmpegKit.execute(command)
+      const returnCode = await session.getReturnCode()
+
+      if (!returnCode || !returnCode.isValueSuccess()) {
+        throw new Error('FFmpeg falló')
+      }
+
+      if (Platform.OS === 'android') {
+        // RNFS en algunas versiones espera string, no array
+        await RNFS.scanFile(outputPath)
+      }
+
+      if (compartir) {
+        const shareUrl =
+          Platform.OS === 'android' ? `file://${outputPath}` : outputPath
+        await Share.share({ url: shareUrl })
+      }
 
       Alert.alert('Listo', 'Video guardado en la galería')
     } catch (e) {
@@ -69,15 +130,18 @@ const Preview360 = ({ route, navigation }) => {
       <Text style={styles.title}>Vista previa</Text>
 
       <View style={styles.bottomCard}>
-        <TouchableOpacity style={styles.shareBtn} onPress={guardarVideoConPlantilla}>
+        <TouchableOpacity
+          style={styles.shareBtn}
+          onPress={() => guardarVideoConPlantilla({ compartir: false })}
+        >
           <Text style={styles.shareText}>Guardar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.shareBtn, styles.secondaryBtn]}
-          onPress={() => navigation.goBack()}
+          onPress={() => guardarVideoConPlantilla({ compartir: true })}
         >
-          <Text style={styles.shareText}>Repetir</Text>
+          <Text style={styles.shareText}>Compartir</Text>
         </TouchableOpacity>
       </View>
     </View>
