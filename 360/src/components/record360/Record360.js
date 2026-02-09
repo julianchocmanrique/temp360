@@ -14,7 +14,7 @@ import { launchCamera } from 'react-native-image-picker'
 import RNBlobUtil from 'react-native-blob-util'
 
 const templates = [
-  { id: 1, name: 'Plantilla Tropical', image: require('../../assets/frames/frame1.png') },
+  { id: 1, name: 'Plantilla Boda', image: require('../../assets/frames/frame1.png') },
   { id: 2, name: 'Plantilla Playa', image: require('../../assets/frames/frame2.png') },
   { id: 3, name: 'Plantilla Navidad', image: require('../../assets/frames/frame3.png') },
 ]

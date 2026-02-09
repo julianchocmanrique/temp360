@@ -73,6 +73,9 @@ const styles = StyleSheet.create({
 
   frame: {
     ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+    opacity: 0.7,
     zIndex: 2,
   },
 
