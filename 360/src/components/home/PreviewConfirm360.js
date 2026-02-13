@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native'
 import Video from 'react-native-video'
 
 const PreviewConfirm360 = ({ route, navigation }) => {
-  const { videoUri, plantilla, sourceUri, fileCopyUri } = route.params
+  const { videoUri, plantilla, sourceUri, fileCopyUri, effect } = route.params
 
   return (
     <View style={styles.container}>
@@ -18,7 +18,7 @@ const PreviewConfirm360 = ({ route, navigation }) => {
       />
 
       {/* PLANTILLA */}
-      {plantilla?.image && (
+      {plantillaque.image && (
         <Image
           source={plantilla.image}
           style={styles.frame}
@@ -52,6 +52,7 @@ const PreviewConfirm360 = ({ route, navigation }) => {
               sourceUri,
               fileCopyUri,
               plantilla,
+              effect,
             })
           }
         >
@@ -68,20 +69,17 @@ export default PreviewConfirm360
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#14081E',
   },
 
   frame: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
-    opacity: 0.7,
+    opacity: 0.75,
     zIndex: 2,
   },
 
-  /* =========================
-     FLECHA LIMPIA (SIN FONDO)
-  ========================= */
   backButton: {
     position: 'absolute',
     top: 52,
@@ -90,14 +88,11 @@ const styles = StyleSheet.create({
   },
 
   backText: {
-    color: '#FFFFFF',
+    color: '#C9B5FF',
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 
-  /* =========================
-     BOTONES INFERIORES
-  ========================= */
   actions: {
     position: 'absolute',
     bottom: 50,
@@ -127,7 +122,9 @@ const styles = StyleSheet.create({
     minWidth: 140,
     paddingVertical: 14,
     borderRadius: 30,
-    backgroundColor: 'rgba(15,12,30,0.75)',
+    backgroundColor: '#2A163D',
+    borderWidth: 1,
+    borderColor: '#3B2460',
     justifyContent: 'center',
     alignItems: 'center',
 
@@ -144,4 +141,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.5,
   },
-})
+});

@@ -3,11 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Splash from '../splash/Splash';
 import Home from '../home/Home';
-import Record360 from '../record360/Record360';
-import Preview360 from '../home/Preview360';
-import PreviewConfirm360 from '../home/PreviewConfirm360';
-import VideosList from '../home/VideosList';
+import Configuracion from '../home/Configuracion';
+import Grabar from '../record360/Grabar';
 import VideoPlayer from '../home/VideoPlayer';
+import VistaPrevia from '../home/VistaPrevia';
+import VideosList from '../home/VideosList';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,17 +16,17 @@ const CoinsStack = () => {
     <Stack.Navigator
       initialRouteName="Splash"
       screenOptions={{
-        headerShown: false, // 🔥 CLAVE: elimina TODAS las flechas nativas
+        headerShown: false,
         animation: 'slide_from_right',
       }}
     >
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="Record360" component={Record360} />
-      <Stack.Screen name="PreviewConfirm360" component={PreviewConfirm360} />
-      <Stack.Screen name="Preview360" component={Preview360} />
-      <Stack.Screen name="VideosList" component={VideosList} />
+      <Stack.Screen name="Configuracion" component={Configuracion} />
+      <Stack.Screen name="Grabar" component={Grabar} />
       <Stack.Screen name="VideoPlayer" component={VideoPlayer} />
+      <Stack.Screen name="VistaPrevia" component={VistaPrevia} />
+      <Stack.Screen name="VideosList" component={VideosList} />
     </Stack.Navigator>
   );
 };

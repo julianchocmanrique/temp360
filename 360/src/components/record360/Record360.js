@@ -1,189 +1,146 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   View,
   StyleSheet,
   Image,
   TouchableOpacity,
   Text,
-  FlatList,
-  PermissionsAndroid,
-  Platform,
   Alert,
+  ScrollView,
 } from 'react-native'
-import { launchCamera } from 'react-native-image-picker'
-import RNBlobUtil from 'react-native-blob-util'
 
 const templates = [
-  { id: 1, name: 'Plantilla Boda', image: require('../../assets/frames/frame1.png') },
-  { id: 2, name: 'Plantilla Playa', image: require('../../assets/frames/frame2.png') },
-  { id: 3, name: 'Plantilla Navidad', image: require('../../assets/frames/frame3.png') },
+  {
+    id: 1,
+    name: 'Bodas',
+    subtitle: 'Elegancia cinematografica para capturar el "si" eterno y los momentos magicos.',
+    duration: '15s',
+    effectLabel: 'Slow Motion',
+    image: require('../../assets/plantillas/boda.png'),
+  },
+  {
+    id: 2,
+    name: 'Fiestas Privadas',
+    subtitle: 'Diversion sin limites, luces de neon y la energia de tus amigos en bucle.',
+    duration: '10s',
+    effectLabel: 'Boomerang',
+    image: require('../../assets/plantillas/fiesta.png'),
+  },
+  {
+    id: 3,
+    name: 'Eventos Corporativos',
+    subtitle: 'Networking profesional y presencia de marca con un acabado premium.',
+    duration: '20s',
+    effectLabel: 'Branding Overlay',
+    image: require('../../assets/plantillas/navidad.png'),
+  },
+  {
+    id: 4,
+    name: 'Cumpleanos',
+    subtitle: 'Recuerdos calidos, velas y sonrisas con un toque festivo.',
+    duration: '12s',
+    effectLabel: 'Highlights',
+    image: require('../../assets/plantillas/cumple.png'),
+  },
+  {
+    id: 5,
+    name: 'Tropical',
+    subtitle: 'Vibras veraniegas y colores vivos para fiestas inolvidables.',
+    duration: '14s',
+    effectLabel: 'Glow',
+    image: require('../../assets/plantillas/tropical.png'),
+  },
 ]
 
 const Record360 = ({ navigation }) => {
   const [plantilla, setPlantilla] = useState(null)
   const [showSelector, setShowSelector] = useState(true)
-  const [countdown, setCountdown] = useState(null)
+  const [countdown] = useState(null)
+  const [selectedEffect, setSelectedEffect] = useState('auto')
 
-  useEffect(() => {
-    if (countdown === null) return
-    if (countdown === 0) {
-      setCountdown(null)
-      grabarVideo()
+  const grabarVideo = () => {
+    if (!plantilla) {
+      Alert.alert('Elige una plantilla', 'Selecciona una plantilla para continuar')
       return
     }
-    const timer = setTimeout(() => {
-      setCountdown(prev => prev - 1)
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [countdown])
-
-  const grabarVideo = async () => {
-    if (Platform.OS === 'android') {
-      const permission =
-        Platform.Version >= 33
-          ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO
-          : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
-
-      const granted = await PermissionsAndroid.request(permission)
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        Alert.alert('Permiso requerido', 'Necesitamos acceso a videos')
-        return
-      }
-    }
-
-    const result = await launchCamera({
-      mediaType: 'video',
-      videoQuality: 'high',
-      durationLimit: 30,
-      includeExtra: true,
-      saveToPhotos: true,
-    })
-
-    if (result.didCancel || !result.assets) return
-
-    const asset = result.assets[0]
-    if (!asset) return
-
-    const candidates = [asset.fileCopyUri, asset.originalPath, asset.uri].filter(
-      Boolean
-    )
-
-    const destDir = `${RNBlobUtil.fs.dirs.DocumentDir}/INMERSA360`
-    try {
-      const dirExists = await RNBlobUtil.fs.exists(destDir)
-      if (!dirExists) {
-        await RNBlobUtil.fs.mkdir(destDir)
-      }
-    } catch (e) {
-      // si no se puede crear, seguimos con la uri original
-    }
-
-    let finalPath = null
-    for (const candidate of candidates) {
-      const raw = candidate.startsWith('file://')
-        ? candidate.replace('file://', '')
-        : candidate
-      const dest = `${destDir}/video_${Date.now()}.mp4`
-      try {
-        await RNBlobUtil.fs.cp(raw, dest)
-        const exists = await RNBlobUtil.fs.exists(dest)
-        if (exists) {
-          finalPath = dest
-          break
-        }
-      } catch (e) {
-        // intenta con el siguiente candidato
-      }
-    }
-
-    if (!finalPath) {
-      Alert.alert('Error', 'No se pudo preparar el video')
-      return
-    }
-
-    const safeVideoUri = `file://${finalPath}`
-    navigation.navigate('PreviewConfirm360', {
-      videoUri: safeVideoUri,
-      sourceUri: asset.originalPath,
-      fileCopyUri: asset.fileCopyUri,
-      plantilla,
-    })
+    navigation.navigate('Record360Camera', { plantilla, effect: selectedEffect })
   }
 
-  /* =========================
-     CONTEO
-  ========================= */
   if (countdown !== null) {
-    return (
-      <View style={styles.countContainer}>
-        <Image
-          source={require('../../assets/fiestafondo.png')}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
-
-        <View style={styles.darkOverlay} />
-
-        <View style={styles.topBadge}>
-          <Text style={styles.badgeText}>INMERSA 360°</Text>
-        </View>
-
-        <Text style={styles.preparing}>PREPARANDO</Text>
-
-        <View style={styles.circleWrap}>
-          <View style={styles.circle}>
-            <Text style={styles.countText}>{countdown}</Text>
-          </View>
-        </View>
-
-        <Text style={styles.centerText}>MANTENTE EN EL CENTRO</Text>
-      </View>
-    )
+    return null
   }
 
-  /* =========================
-     SELECTOR
-  ========================= */
   if (showSelector) {
     return (
       <View style={styles.selectorContainer}>
-        <Image
-          source={require('../../assets/fiestafondo.png')}
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
+        <View style={styles.heroGlow} />
+        <View style={styles.selectorHeader}>
+          <View style={styles.headerRow}>
+            <View style={styles.brandRow}>
+              <View style={styles.brandIcon}>
+                <Text style={styles.brandIconText}>IN</Text>
+              </View>
+              <Text style={styles.brandText}>INMERSA</Text>
+            </View>
+            <View style={styles.bell}>
+              <Text style={styles.bellText}>!</Text>
+            </View>
+          </View>
+          <Text style={styles.selectorTitle}>Hola,</Text>
+          <Text style={styles.selectorTitleBold}>que celebramos hoyque</Text>
+        </View>
 
-        <View style={styles.selectorOverlay} />
-
-        <Text style={styles.selectorTitle}>¿Qué celebramos hoy?</Text>
-
-        <FlatList
-          data={templates}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.templateCard}
-              activeOpacity={0.85}
-              onPress={() => {
-                setPlantilla(item)
-                setShowSelector(false)
-              }}
-            >
+        <ScrollView contentContainerStyle={styles.cardsWrap}>
+          {templates.map((item) => (
+            <View key={item.id} style={styles.templateCard}>
               <Image source={item.image} style={styles.templateImage} />
-              <Text style={styles.templateName}>{item.name}</Text>
-            </TouchableOpacity>
-          )}
-        />
+              <View style={styles.cardOverlay} />
+              <View style={styles.tagRow}>
+                <View style={styles.durationChip}>
+                  <Text style={styles.durationText}>t {item.duration}</Text>
+                </View>
+                <View style={styles.effectChipSmall}>
+                  <Text style={styles.effectChipSmallText}>{item.effectLabel}</Text>
+                </View>
+              </View>
+              <View style={styles.cardBody}>
+                <Text style={styles.templateName}>{item.name}</Text>
+                <Text style={styles.templateSubtitle}>{item.subtitle}</Text>
+                <TouchableOpacity
+                  style={styles.selectBtn}
+                  activeOpacity={0.9}
+                  onPress={() => {
+                    setPlantilla(item)
+                    setShowSelector(false)
+                  }}
+                >
+                  <Text style={styles.selectBtnText}>Seleccionar Plantilla  ></Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
       </View>
     )
   }
 
-  /* =========================
-     LISTO PARA GRABAR
-  ========================= */
   return (
     <View style={styles.recordContainer}>
+      <View style={styles.recordHeader}>
+        <View style={styles.headerRow}>
+          <View style={styles.brandRow}>
+            <View style={styles.brandIcon}>
+              <Text style={styles.brandIconText}>IN</Text>
+            </View>
+            <Text style={styles.brandText}>INMERSA</Text>
+          </View>
+          <View style={styles.bell}>
+            <Text style={styles.bellText}>!</Text>
+          </View>
+        </View>
+        <Text style={styles.recordTitle}>Listo para grabar</Text>
+        <Text style={styles.recordSubtitle}>Elige el efecto y graba tu momento</Text>
+      </View>
       {plantilla && (
         <Image
           source={plantilla.image}
@@ -191,8 +148,41 @@ const Record360 = ({ navigation }) => {
           resizeMode="stretch"
         />
       )}
+      <View style={styles.previewOverlay} />
 
-      {/* FLECHA LIMPIA (SIN FONDO) */}
+      <View style={styles.effectPanel}>
+        <Text style={styles.effectTitle}>Efecto</Text>
+        <View style={styles.effectRow}>
+          {[
+            { id: 'auto', label: 'Automatico' },
+            { id: 'normal', label: 'Normal' },
+            { id: 'fast2', label: 'Rapida 2x' },
+            { id: 'fast4', label: 'Rapida 4x' },
+            { id: 'slow05', label: 'Lenta 0.5x' },
+            { id: 'slow025', label: 'Lenta 0.25x' },
+            { id: 'boomerang', label: 'Boomerang' },
+          ].map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[
+                styles.effectChip,
+                selectedEffect === item.id && styles.effectChipActive,
+              ]}
+              onPress={() => setSelectedEffect(item.id)}
+            >
+              <Text
+                style={[
+                  styles.effectChipText,
+                  selectedEffect === item.id && styles.effectChipTextActive,
+                ]}
+              >
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => {
@@ -201,13 +191,13 @@ const Record360 = ({ navigation }) => {
         }}
         activeOpacity={0.7}
       >
-        <Text style={styles.backText}>◀</Text>
+        <Text style={styles.backText}>{'<'}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.recordBtn}
         activeOpacity={0.85}
-        onPress={() => setCountdown(3)}
+        onPress={grabarVideo}
       >
         <Text style={styles.recordText}>Grabar</Text>
       </TouchableOpacity>
@@ -217,9 +207,6 @@ const Record360 = ({ navigation }) => {
 
 export default Record360
 
-/* =========================
-   ESTILOS
-========================= */
 const styles = StyleSheet.create({
   countContainer: {
     flex: 1,
@@ -289,48 +276,226 @@ const styles = StyleSheet.create({
 
   selectorContainer: {
     flex: 1,
-    paddingTop: 90,
+    backgroundColor: '#14081E',
   },
 
-  selectorOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15,10,35,0.75)',
+  heroGlow: {
+    position: 'absolute',
+    top: -120,
+    left: -40,
+    width: 280,
+    height: 280,
+    backgroundColor: 'rgba(155,92,255,0.35)',
+    borderRadius: 160,
+    opacity: 0.6,
+  },
+
+  selectorHeader: {
+    paddingTop: 48,
+    paddingHorizontal: 22,
+    paddingBottom: 16,
+  },
+
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  brandIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: '#9B5CFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  brandIconText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  brandText: {
+    color: '#C9B5FF',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+
+  bell: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+  },
+
+  bellText: {
+    fontSize: 14,
+    color: '#C9B5FF',
   },
 
   selectorTitle: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 26,
+    fontWeight: '600',
+  },
+
+  selectorTitleBold: {
+    color: '#9B5CFF',
+    fontSize: 30,
+    fontWeight: '800',
+    marginTop: 2,
+  },
+
+  recordHeader: {
+    paddingTop: 48,
+    paddingHorizontal: 22,
+    paddingBottom: 10,
+  },
+
+  recordTitle: {
+    color: '#FFFFFF',
+    fontSize: 22,
     fontWeight: '700',
-    marginBottom: 24,
-    paddingHorizontal: 20,
+    marginTop: 6,
+  },
+
+  recordSubtitle: {
+    color: '#C9B5FF',
+    fontSize: 13,
+    marginTop: 6,
+  },
+
+  cardsWrap: {
+    paddingHorizontal: 18,
+    paddingBottom: 30,
+    gap: 18,
   },
 
   templateCard: {
-    marginHorizontal: 20,
-    marginBottom: 26,
-    borderRadius: 26,
+    borderRadius: 22,
     overflow: 'hidden',
-    backgroundColor: '#1B1233',
-    elevation: 6,
+    backgroundColor: '#1A1026',
+    borderWidth: 1,
+    borderColor: '#2A163D',
   },
 
   templateImage: {
     width: '100%',
-    height: 190,
+    height: 220,
+  },
+
+  cardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10,8,20,0.15)',
+  },
+
+  tagRow: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    flexDirection: 'row',
+    gap: 10,
+  },
+
+  durationChip: {
+    backgroundColor: '#9B5CFF',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+
+  durationText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  effectChipSmall: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+
+  effectChipSmallText: {
+    color: '#EDE7FF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
+  cardBody: {
+    padding: 16,
+    backgroundColor: '#1A1026',
   },
 
   templateName: {
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '600',
-    padding: 18,
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+
+  templateSubtitle: {
+    color: '#C9B5FF',
+    fontSize: 12,
+    marginTop: 6,
+    lineHeight: 16,
+  },
+
+  selectBtn: {
+    marginTop: 14,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 14,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+
+  selectBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+
+  templateList: {
+    paddingHorizontal: 18,
+    paddingBottom: 36,
+    gap: 18,
+  },
+
+  templateRow: {
+    justifyContent: 'space-between',
+    marginBottom: 18,
+    paddingHorizontal: 4,
+  },
+
+  templateFooter: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    backgroundColor: '#1A1026',
   },
 
   recordContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#14081E',
   },
 
   recordBtn: {
@@ -349,9 +514,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
 
-  /* =========================
-     FLECHA LIMPIA
-  ========================= */
   backButton: {
     position: 'absolute',
     top: 52,
@@ -363,5 +525,52 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 24,
     fontWeight: '600',
+  },
+  effectPanel: {
+    position: 'absolute',
+    bottom: 130,
+    left: 18,
+    right: 18,
+    backgroundColor: 'rgba(20,8,30,0.8)',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#2A163D',
+  },
+  effectTitle: {
+    color: '#C9B5FF',
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 8,
+    letterSpacing: 0.6,
+  },
+  effectRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  effectChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(201,181,255,0.2)',
+  },
+  effectChipActive: {
+    backgroundColor: '#9B5CFF',
+    borderColor: '#9B5CFF',
+  },
+  effectChipText: {
+    color: '#E2D7FF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  effectChipTextActive: {
+    color: '#fff',
+  },
+  previewOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(10,8,20,0.35)',
   },
 })
