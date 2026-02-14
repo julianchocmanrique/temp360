@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Modal, Platform } from 'react-native'
+import React, { useRef } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native'
 import Video from 'react-native-video'
 import { Image } from 'react-native'
 import RNFS from 'react-native-fs'
@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FFmpegKit } from 'ffmpeg-kit-react-native'
 import RNBlobUtil from 'react-native-blob-util'
 import { API_URL } from '../../config/api'
+import { setUploadJobState } from './uploadJobState'
 
 const FILTER_SOURCE_MAP = {
   stars: require('../../assets/plantillas/navidad.png'),
@@ -55,8 +56,7 @@ const VideoPlayer = ({ route, navigation }) => {
   const effect = route?.params?.effect || 'auto'
   const isGallery = Boolean(item && item.url)
   const playbackUri = item?.url || videoUri
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [progressText, setProgressText] = useState('')
+  const saveLockRef = useRef(false)
 
   if (!global.__inmersaErrorHookInstalled) {
     const oldHandler = global.ErrorUtils?.getGlobalHandler?.()
@@ -166,21 +166,28 @@ const VideoPlayer = ({ route, navigation }) => {
   }
 
   const guardar = async () => {
-    if (isProcessing) return
-    try {
-      setIsProcessing(true)
-      setProgressText('Procesando...')
+    if (saveLockRef.current) return
+    saveLockRef.current = true
+    setUploadJobState({
+      status: 'processing',
+      message: 'Preparando video...',
+      error: '',
+    })
+    navigation.replace('VistaPrevia')
 
-      const dir =
-        Platform.OS === 'android'
-          ? `${RNFS.CachesDirectoryPath}/INMERSA360`
-          : (RNFS.TemporaryDirectoryPath ?? RNFS.CachesDirectoryPath)
+    setTimeout(async () => {
+      try {
 
-      if (!(await RNFS.exists(dir))) {
-        await RNFS.mkdir(dir)
-      }
+        const dir =
+          Platform.OS === 'android'
+            ? `${RNFS.CachesDirectoryPath}/INMERSA360`
+            : (RNFS.TemporaryDirectoryPath ?? RNFS.CachesDirectoryPath)
 
-      const outputPath = `${dir}/INMERSA360_${Date.now()}.mp4`
+        if (!(await RNFS.exists(dir))) {
+          await RNFS.mkdir(dir)
+        }
+
+        const outputPath = `${dir}/INMERSA360_${Date.now()}.mp4`
 
       const inputVideoPath = await resolveVideoPath()
       const plantillaPath = await resolveTemplatePath()
@@ -370,11 +377,11 @@ const VideoPlayer = ({ route, navigation }) => {
         command = `-i "${inputVideoPath}" -loop 1 -framerate 30 -i "${plantillaPath}" -filter_complex "${graphParts.join(';')}" -map "[v]" -map "[afix]" -t 30 -shortest -r 30 -vsync cfr -c:v libx264 -preset veryfast -crf 24 -pix_fmt yuv420p -profile:v baseline -level 3.1 -bf 0 -refs 1 -g 60 -keyint_min 30 -sc_threshold 0 -c:a aac -b:a 128k -movflags +faststart "${outputPath}"`
       }
 
-      const session = await FFmpegKit.execute(command)
-      const returnCode = await session.getReturnCode()
-      if (!returnCode || !returnCode.isValueSuccess()) {
-        throw new Error('FFmpeg fallo')
-      }
+        const session = await FFmpegKit.execute(command)
+        const returnCode = await session.getReturnCode()
+        if (!returnCode || !returnCode.isValueSuccess()) {
+          throw new Error('FFmpeg fallo')
+        }
 
       const now = new Date()
       const dateText = now.toLocaleString()
@@ -386,81 +393,88 @@ const VideoPlayer = ({ route, navigation }) => {
 
       const title = `Boda${nextCount} - ${dateText}`
 
-      setProgressText('Solicitando URL...')
-      const signedRes = await fetch(`${API_URL}/signed-url`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileType: 'video/mp4' }),
-      })
-      if (!signedRes.ok) {
-        throw new Error('No se pudo obtener signed URL')
-      }
-      const { signedUrl, url } = await signedRes.json()
-
-      setProgressText('Subiendo video...')
-      const stat = await RNFS.stat(outputPath)
-      const fileSizeMb = Number((stat.size / (1024 * 1024)).toFixed(2))
-      console.log('UPLOAD_FILE_SIZE_MB', fileSizeMb)
-
-      const existsBeforeUpload = await RNFS.exists(outputPath)
-      if (!existsBeforeUpload) {
-        throw new Error('Archivo de video no encontrado antes de subir')
-      }
-
-      let uploaded = false
-      let lastStatus = 0
-      let lastErr = null
-      for (let attempt = 1; attempt <= 3; attempt += 1) {
-        try {
-          const uploadRes = await RNBlobUtil.config({ timeout: 300000 }).fetch(
-            'PUT',
-            signedUrl,
-            { 'Content-Type': 'video/mp4' },
-            RNBlobUtil.wrap(outputPath)
-          )
-          lastStatus = uploadRes.info().status
-          if (lastStatus >= 200 && lastStatus < 300) {
-            uploaded = true
-            break
-          }
-        } catch (err) {
-          lastErr = err
-          console.log('UPLOAD_ATTEMPT_ERROR', attempt, err?.message || String(err))
+        setUploadJobState({ status: 'processing', message: 'Solicitando URL...' })
+        const signedRes = await fetch(`${API_URL}/signed-url`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileType: 'video/mp4' }),
+        })
+        if (!signedRes.ok) {
+          throw new Error('No se pudo obtener signed URL')
         }
-        setProgressText(`Reintentando subida (${attempt}/3)...`)
-        await new Promise((resolve) => setTimeout(resolve, 1200 * attempt))
-      }
-      if (!uploaded) {
-        const extra = lastErr?.message || `status ${lastStatus}`
-        throw new Error(`Subida fallida: ${extra}`)
-      }
+        const { signedUrl, url } = await signedRes.json()
 
-      setProgressText('Registrando en backend...')
-      const postRes = await fetch(`${API_URL}/posts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          imageUrl: url,
-          mediaType: 'video/mp4',
-        }),
-      })
-      if (!postRes.ok) {
-        throw new Error('No se pudo guardar en el backend')
-      }
+        setUploadJobState({ status: 'processing', message: 'Subiendo video...' })
+        const stat = await RNFS.stat(outputPath)
+        const fileSizeMb = Number((stat.size / (1024 * 1024)).toFixed(2))
+        console.log('UPLOAD_FILE_SIZE_MB', fileSizeMb)
 
-      Alert.alert('Listo', 'Video subido')
-      try {
-        await RNFS.unlink(outputPath)
-      } catch (_) {}
-      navigation.navigate('VistaPrevia')
-    } catch (e) {
-      const msg = e?.message ? `No se pudo guardar el video: ${e.message}` : 'No se pudo guardar el video'
-      Alert.alert('Error', msg)
-    } finally {
-      setIsProcessing(false)
-      setProgressText('')
-    }
+        const existsBeforeUpload = await RNFS.exists(outputPath)
+        if (!existsBeforeUpload) {
+          throw new Error('Archivo de video no encontrado antes de subir')
+        }
+
+        let uploaded = false
+        let lastStatus = 0
+        let lastErr = null
+        for (let attempt = 1; attempt <= 3; attempt += 1) {
+          try {
+            const uploadRes = await RNBlobUtil.config({ timeout: 300000 }).fetch(
+              'PUT',
+              signedUrl,
+              { 'Content-Type': 'video/mp4' },
+              RNBlobUtil.wrap(outputPath)
+            )
+            lastStatus = uploadRes.info().status
+            if (lastStatus >= 200 && lastStatus < 300) {
+              uploaded = true
+              break
+            }
+          } catch (err) {
+            lastErr = err
+            console.log('UPLOAD_ATTEMPT_ERROR', attempt, err?.message || String(err))
+          }
+          setUploadJobState({ status: 'processing', message: `Reintentando subida (${attempt}/3)...` })
+          await new Promise((resolve) => setTimeout(resolve, 1200 * attempt))
+        }
+        if (!uploaded) {
+          const extra = lastErr?.message || `status ${lastStatus}`
+          throw new Error(`Subida fallida: ${extra}`)
+        }
+
+        setUploadJobState({ status: 'processing', message: 'Registrando en backend...' })
+        const postRes = await fetch(`${API_URL}/posts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            imageUrl: url,
+            mediaType: 'video/mp4',
+          }),
+        })
+        if (!postRes.ok) {
+          throw new Error('No se pudo guardar en el backend')
+        }
+
+        setUploadJobState({
+          status: 'success',
+          message: 'Tu video ya esta en la nube',
+          error: '',
+        })
+        try {
+          await RNFS.unlink(outputPath)
+        } catch (_) {}
+      } catch (e) {
+        const msg = e?.message ? `No se pudo guardar el video: ${e.message}` : 'No se pudo guardar el video'
+        setUploadJobState({
+          status: 'error',
+          message: 'No se pudo guardar en segundo plano',
+          error: msg,
+        })
+      } finally {
+        saveLockRef.current = false
+      }
+    }, 10)
   }
 
   return (
@@ -504,14 +518,6 @@ const VideoPlayer = ({ route, navigation }) => {
         )}
       </View>
 
-      <Modal visible={isProcessing} transparent animationType="fade">
-        <View style={styles.loadingOverlay}>
-          <View style={styles.loadingCard}>
-            <View style={styles.spinner} />
-            <Text style={styles.loadingTitle}>{progressText || 'Cargando...'}</Text>
-          </View>
-        </View>
-      </Modal>
     </View>
   )
 }
@@ -530,8 +536,4 @@ const styles = StyleSheet.create({
   actionPrimary: { backgroundColor: '#9B5CFF', paddingVertical: 16, borderRadius: 22, alignItems: 'center' },
   actionSecondary: { backgroundColor: '#2A163D', paddingVertical: 16, borderRadius: 22, alignItems: 'center', marginBottom: 12 },
   actionText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  loadingOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center' },
-  loadingCard: { width: '70%', backgroundColor: '#1A1026', borderRadius: 18, padding: 20, alignItems: 'center', borderWidth: 1, borderColor: '#2A163D' },
-  loadingTitle: { color: '#FFFFFF', marginTop: 12, fontSize: 14, fontWeight: '700' },
-  spinner: { width: 34, height: 34, borderRadius: 17, borderWidth: 3, borderColor: '#2A163D', borderTopColor: '#9B5CFF' },
 })
