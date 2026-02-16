@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Animated, Easing } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Animated, Easing, ActivityIndicator } from 'react-native'
 import { Camera, useCameraDevices } from 'react-native-vision-camera'
 import { useIsFocused } from '@react-navigation/native'
 import Video from 'react-native-video'
@@ -196,10 +196,7 @@ const Grabar = ({ route, navigation }) => {
   if (!hasPermission) {
     return (
       <View style={styles.center}>
-        <Text style={styles.text}>Permisos de camara y microfono requeridos</Text>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>Volver</Text>
-        </TouchableOpacity>
+        <ActivityIndicator size="large" color="#FFFFFF" />
       </View>
     )
   }
@@ -359,51 +356,51 @@ const Grabar = ({ route, navigation }) => {
 export default Grabar
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#14081E' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#14081E', padding: 24 },
+  container: { flex: 1, backgroundColor: '#000000' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000000', padding: 24 },
   text: { color: '#fff', textAlign: 'center' },
-  backBtn: { marginTop: 16, backgroundColor: '#9B5CFF', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 16 },
-  backText: { color: '#fff', fontWeight: '700' },
-  previewOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10,8,20,0.35)' },
-  previewWrap: { flex: 1, backgroundColor: '#14081E' },
+  backBtn: { marginTop: 16, backgroundColor: '#FFFFFF', paddingHorizontal: 18, paddingVertical: 10, borderRadius: 16 },
+  backText: { color: '#000000', fontWeight: '700' },
+  previewOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.35)' },
+  previewWrap: { flex: 1, backgroundColor: '#000000' },
   previewActions: { position: 'absolute', bottom: 50, width: '100%', flexDirection: 'row', justifyContent: 'space-evenly' },
-  previewBtn: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#9B5CFF', alignItems: 'center', justifyContent: 'center' },
+  previewBtn: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
   previewBtnGhost: { width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
-  previewBtnText: { color: '#fff', fontSize: 20, fontWeight: '700' },
+  previewBtnText: { color: '#000000', fontSize: 20, fontWeight: '700' },
 
   recordHeader: {
     position: 'absolute',
     top: 28,
     left: 16,
     right: 16,
-    backgroundColor: 'rgba(20,8,30,0.65)',
+    backgroundColor: 'rgba(0,0,0,0.65)',
     borderRadius: 18,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'rgba(155,92,255,0.25)',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  brandIcon: { width: 28, height: 28, borderRadius: 8, backgroundColor: '#9B5CFF', justifyContent: 'center', alignItems: 'center' },
-  brandIconText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  brandText: { color: '#C9B5FF', fontSize: 13, fontWeight: '700', letterSpacing: 1 },
+  brandIcon: { width: 28, height: 28, borderRadius: 8, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
+  brandIconText: { color: '#000000', fontSize: 12, fontWeight: '700' },
+  brandText: { color: '#D0D0D0', fontSize: 13, fontWeight: '700', letterSpacing: 1 },
   bell: { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.08)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
-  bellText: { fontSize: 14, color: '#C9B5FF' },
+  bellText: { fontSize: 14, color: '#D0D0D0' },
   recordTitle: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginTop: 6 },
-  recordSubtitle: { color: '#C9B5FF', fontSize: 13, marginTop: 6 },
+  recordSubtitle: { color: '#D0D0D0', fontSize: 13, marginTop: 6 },
   timerBadge: { position: 'absolute', top: 140, right: 24, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
   timerText: { color: '#fff', fontWeight: '700' },
-  effectPanel: { position: 'absolute', bottom: 102, left: 16, right: 16, backgroundColor: 'rgba(20,8,30,0.9)', borderRadius: 18, padding: 12, borderWidth: 1, borderColor: '#2A163D', maxHeight: 180 },
-  effectTitle: { color: '#C9B5FF', fontSize: 12, fontWeight: '700', marginBottom: 8, letterSpacing: 0.6 },
+  effectPanel: { position: 'absolute', bottom: 102, left: 16, right: 16, backgroundColor: 'rgba(0,0,0,0.9)', borderRadius: 18, padding: 12, borderWidth: 1, borderColor: '#1E1E1E', maxHeight: 180 },
+  effectTitle: { color: '#D0D0D0', fontSize: 12, fontWeight: '700', marginBottom: 8, letterSpacing: 0.6 },
   effectRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  effectChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(201,181,255,0.2)' },
-  effectChipActive: { backgroundColor: '#9B5CFF', borderColor: '#9B5CFF' },
-  effectChipText: { color: '#E2D7FF', fontSize: 12, fontWeight: '600' },
-  effectChipTextActive: { color: '#fff' },
+  effectChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
+  effectChipActive: { backgroundColor: '#FFFFFF', borderColor: '#FFFFFF' },
+  effectChipText: { color: '#E6E6E6', fontSize: 12, fontWeight: '600' },
+  effectChipTextActive: { color: '#000000' },
 
-  recordBtn: { position: 'absolute', bottom: 26, alignSelf: 'center', backgroundColor: '#9B5CFF', paddingHorizontal: 56, paddingVertical: 18, borderRadius: 60, elevation: 8 },
-  recordText: { color: '#fff', fontSize: 18, fontWeight: '700', letterSpacing: 0.6 },
+  recordBtn: { position: 'absolute', bottom: 26, alignSelf: 'center', backgroundColor: '#FFFFFF', paddingHorizontal: 56, paddingVertical: 18, borderRadius: 60, elevation: 8 },
+  recordText: { color: '#000000', fontSize: 18, fontWeight: '700', letterSpacing: 0.6 },
   countdownOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(10,8,20,0.58)',
@@ -438,7 +435,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
   },
   countdownDotPulse: {
     position: 'absolute',
@@ -451,7 +448,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF4D4F',
   },
   countdownStatus: {
-    color: '#D8D3E8',
+    color: '#D6D6D6',
     fontSize: 26,
     fontWeight: '500',
     letterSpacing: 0.6,
@@ -463,7 +460,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.18)',
-    shadowColor: '#9B5CFF',
+    shadowColor: '#FFFFFF',
     shadowOpacity: 0.22,
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 0 },
@@ -481,8 +478,8 @@ const styles = StyleSheet.create({
     borderRadius: 142,
     borderWidth: 11,
     borderColor: 'transparent',
-    borderTopColor: '#9B5CFF',
-    borderRightColor: '#9B5CFF',
+    borderTopColor: '#FFFFFF',
+    borderRightColor: '#FFFFFF',
   },
   countdownRingArcLive: {
     borderTopColor: '#FF4D4F',
@@ -506,7 +503,7 @@ const styles = StyleSheet.create({
     bottom: 120,
     left: 0,
     right: 0,
-    color: '#D8D3E8',
+    color: '#D6D6D6',
     fontSize: 20,
     fontWeight: '500',
     letterSpacing: 0.8,

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
 import { Camera, useCameraDevices } from 'react-native-vision-camera'
 import { useIsFocused } from '@react-navigation/native'
 
@@ -134,10 +134,7 @@ const Record360Camera = ({ route, navigation }) => {
   if (!hasPermission) {
     return (
       <View style={styles.center}>
-        <Text style={styles.text}>Permisos de cámara y micrófono requeridos</Text>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>Volver</Text>
-        </TouchableOpacity>
+        <ActivityIndicator size="large" color="#FFFFFF" />
       </View>
     )
   }
@@ -212,10 +209,10 @@ const styles = StyleSheet.create({
   hintText: { color: '#fff', fontSize: 12 },
   backBtn: {
     marginTop: 16,
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 16,
   },
-  backText: { color: '#fff', fontWeight: '700' },
+  backText: { color: '#000000', fontWeight: '700' },
 })

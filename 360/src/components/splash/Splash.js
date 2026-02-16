@@ -45,7 +45,7 @@ const Splash = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#14081E" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
 
       <View style={styles.centerContent}>
         <Animated.View
@@ -84,7 +84,7 @@ export default Splash;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#14081E',
+    backgroundColor: '#000000',
   },
 
   centerContent: {
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
 
   logoGlow: {
-    shadowColor: '#9B5CFF',
+    shadowColor: '#FFFFFF',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.45,
     shadowRadius: 25,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
 
   subtitle: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 12,
     letterSpacing: 1.6,
     marginTop: 6,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   progressContainer: {
     height: 4,
     width: '60%',
-    backgroundColor: '#2A163D',
+    backgroundColor: '#1E1E1E',
     borderRadius: 2,
     overflow: 'hidden',
     marginBottom: 10,
@@ -139,11 +139,11 @@ const styles = StyleSheet.create({
 
   progressBar: {
     height: '100%',
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
   },
 
   version: {
-    color: '#7A5C99',
+    color: '#A0A0A0',
     fontSize: 11,
   },
 });

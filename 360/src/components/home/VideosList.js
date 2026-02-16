@@ -166,15 +166,15 @@ const VideosList = ({ navigation }) => {
       )}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Home')}>
-          <Icon name="home-outline" size={22} color="#C9B5FF" />
+          <Icon name="home-outline" size={22} color="#D0D0D0" />
           <Text style={styles.navText}>INICIO</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Icon name="images" size={22} color="#9B5CFF" />
+          <Icon name="images" size={22} color="#FFFFFF" />
           <Text style={[styles.navText, styles.navTextActive]}>GALERIA</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Icon name="settings-outline" size={22} color="#C9B5FF" />
+          <Icon name="settings-outline" size={22} color="#D0D0D0" />
           <Text style={styles.navText}>AJUSTES</Text>
         </TouchableOpacity>
       </View>
@@ -185,17 +185,17 @@ const VideosList = ({ navigation }) => {
 export default VideosList
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#14081E', padding: SIDE_PADDING, paddingBottom: 86 },
+  container: { flex: 1, backgroundColor: '#000000', padding: SIDE_PADDING, paddingBottom: 86 },
   title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginBottom: 12 },
-  info: { color: '#C9B5FF', marginTop: 20 },
+  info: { color: '#D0D0D0', marginTop: 20 },
   card: {
     width: CARD_WIDTH,
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
     borderRadius: 18,
     overflow: 'hidden',
     paddingBottom: 12,
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#1E1E1E',
     shadowColor: '#000',
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -219,26 +219,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#9B5CFF',
+    borderColor: '#FFFFFF',
   },
-  playText: { color: '#9B5CFF', fontSize: 24, fontWeight: '700' },
+  playText: { color: '#FFFFFF', fontSize: 24, fontWeight: '700' },
   cardTitle: { color: '#FFFFFF', fontSize: 14, fontWeight: '700', margin: 10 },
-  cardDate: { color: '#C9B5FF', fontSize: 11, marginHorizontal: 10 },
+  cardDate: { color: '#D0D0D0', fontSize: 11, marginHorizontal: 10 },
   cardDuration: {
-    color: '#B59CFF',
+    color: '#BDBDBD',
     fontSize: 11,
     marginHorizontal: 10,
     marginTop: 4,
   },
   deleteBtn: {
-    backgroundColor: '#2A163D',
+    backgroundColor: '#1E1E1E',
     marginTop: 10,
     marginHorizontal: 10,
     borderRadius: 12,
     paddingVertical: 8,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#3B2460',
+    borderColor: '#2A2A2A',
   },
   deleteText: { color: '#FFFFFF', fontWeight: '700', fontSize: 12 },
   bottomNav: {
@@ -247,11 +247,11 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 78,
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#1E1E1E',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -263,12 +263,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   navText: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   navTextActive: {
-    color: '#9B5CFF',
+    color: '#FFFFFF',
   },
 })

@@ -303,13 +303,13 @@ const Preview360 = ({ route, navigation }) => {
 export default Preview360
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#14081E' },
+  container: { flex: 1, backgroundColor: '#000000' },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(12,6,18,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
   backButton: { position: 'absolute', top: 50, left: 20, zIndex: 10 },
-  backText: { color: '#C9B5FF', fontSize: 22, fontWeight: '700' },
+  backText: { color: '#D0D0D0', fontSize: 22, fontWeight: '700' },
   title: {
     position: 'absolute',
     top: 52,
@@ -323,14 +323,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     padding: 24,
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
     borderTopLeftRadius: 36,
     borderTopRightRadius: 36,
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#1E1E1E',
   },
   shareBtn: {
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     paddingVertical: 18,
     borderRadius: 26,
     alignItems: 'center',
@@ -341,10 +341,12 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   secondaryBtn: {
-    backgroundColor: '#2A163D',
+    backgroundColor: '#E6E6E6',
+    borderWidth: 1,
+    borderColor: '#BDBDBD',
     marginTop: 16,
   },
-  shareText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  shareText: { color: '#000000', fontSize: 18, fontWeight: '700' },
   templateFill: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
@@ -359,11 +361,11 @@ const styles = StyleSheet.create({
   },
   loadingCard: {
     width: '82%',
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
     borderRadius: 18,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#1E1E1E',
   },
   loadingTitle: {
     color: '#FFFFFF',
@@ -375,15 +377,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 10,
     borderRadius: 6,
-    backgroundColor: '#2A163D',
+    backgroundColor: '#1E1E1E',
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
   },
   loadingPct: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 12,
     marginTop: 8,
     textAlign: 'right',

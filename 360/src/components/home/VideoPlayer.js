@@ -504,15 +504,15 @@ const VideoPlayer = ({ route, navigation }) => {
       <View style={styles.bottomCard}>
         {isGallery ? (
           <TouchableOpacity style={styles.actionPrimary} onPress={() => navigation.goBack()}>
-            <Text style={styles.actionText}>Volver</Text>
+            <Text style={styles.actionTextPrimary}>Volver</Text>
           </TouchableOpacity>
         ) : (
           <>
             <TouchableOpacity style={styles.actionSecondary} onPress={() => navigation.goBack()}>
-              <Text style={styles.actionText}>Repetir</Text>
+              <Text style={styles.actionTextSecondary}>Repetir</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionPrimary} onPress={guardar}>
-              <Text style={styles.actionText}>Guardar</Text>
+              <Text style={styles.actionTextPrimary}>Guardar</Text>
             </TouchableOpacity>
           </>
         )}
@@ -525,15 +525,16 @@ const VideoPlayer = ({ route, navigation }) => {
 export default VideoPlayer
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#14081E' },
+  container: { flex: 1, backgroundColor: '#000000' },
   back: { position: 'absolute', top: 50, left: 20, zIndex: 10 },
-  backText: { color: '#C9B5FF', fontSize: 22, fontWeight: '700' },
+  backText: { color: '#D0D0D0', fontSize: 22, fontWeight: '700' },
   title: { position: 'absolute', top: 52, alignSelf: 'center', color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
   video: { width: '100%', height: '100%' },
   frame: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%', opacity: 0.75 },
   frameFilter: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%', opacity: 0.28 },
-  bottomCard: { position: 'absolute', bottom: 0, width: '100%', padding: 24, backgroundColor: '#1A1026', borderTopLeftRadius: 36, borderTopRightRadius: 36, borderWidth: 1, borderColor: '#2A163D' },
-  actionPrimary: { backgroundColor: '#9B5CFF', paddingVertical: 16, borderRadius: 22, alignItems: 'center' },
-  actionSecondary: { backgroundColor: '#2A163D', paddingVertical: 16, borderRadius: 22, alignItems: 'center', marginBottom: 12 },
-  actionText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  bottomCard: { position: 'absolute', bottom: 0, width: '100%', padding: 24, backgroundColor: '#0F0F0F', borderTopLeftRadius: 36, borderTopRightRadius: 36, borderWidth: 1, borderColor: '#1E1E1E' },
+  actionPrimary: { backgroundColor: '#FFFFFF', paddingVertical: 16, borderRadius: 22, alignItems: 'center' },
+  actionSecondary: { backgroundColor: '#1E1E1E', paddingVertical: 16, borderRadius: 22, alignItems: 'center', marginBottom: 12 },
+  actionTextPrimary: { color: '#000000', fontSize: 16, fontWeight: '700' },
+  actionTextSecondary: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
 })

@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
 
   darkOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10,8,20,0.65)',
+    backgroundColor: 'rgba(0,0,0,0.65)',
   },
 
   topBadge: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   preparing: {
     position: 'absolute',
     top: 110,
-    color: '#CFC8FF',
+    color: '#D0D0D0',
     fontSize: 13,
     letterSpacing: 1,
   },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     height: 210,
     borderRadius: 105,
     borderWidth: 10,
-    borderColor: '#9B5CFF',
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -269,14 +269,14 @@ const styles = StyleSheet.create({
   centerText: {
     position: 'absolute',
     bottom: 90,
-    color: '#E6E4FF',
+    color: '#F2F2F2',
     fontSize: 13,
     letterSpacing: 1.2,
   },
 
   selectorContainer: {
     flex: 1,
-    backgroundColor: '#14081E',
+    backgroundColor: '#000000',
   },
 
   heroGlow: {
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     left: -40,
     width: 280,
     height: 280,
-    backgroundColor: 'rgba(155,92,255,0.35)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 160,
     opacity: 0.6,
   },
@@ -313,19 +313,19 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   brandIconText: {
-    color: '#fff',
+    color: '#000000',
     fontSize: 12,
     fontWeight: '700',
   },
 
   brandText: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 13,
     fontWeight: '700',
     letterSpacing: 1,
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
 
   bellText: {
     fontSize: 14,
-    color: '#C9B5FF',
+    color: '#D0D0D0',
   },
 
   selectorTitle: {
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   },
 
   selectorTitleBold: {
-    color: '#9B5CFF',
+    color: '#FFFFFF',
     fontSize: 30,
     fontWeight: '800',
     marginTop: 2,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   },
 
   recordSubtitle: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 13,
     marginTop: 6,
   },
@@ -388,9 +388,9 @@ const styles = StyleSheet.create({
   templateCard: {
     borderRadius: 22,
     overflow: 'hidden',
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#1E1E1E',
   },
 
   templateImage: {
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
 
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10,8,20,0.15)',
+    backgroundColor: 'rgba(0,0,0,0.15)',
   },
 
   tagRow: {
@@ -412,14 +412,14 @@ const styles = StyleSheet.create({
   },
 
   durationChip: {
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
 
   durationText: {
-    color: '#fff',
+    color: '#000000',
     fontSize: 12,
     fontWeight: '700',
   },
@@ -434,14 +434,14 @@ const styles = StyleSheet.create({
   },
 
   effectChipSmallText: {
-    color: '#EDE7FF',
+    color: '#F2F2F2',
     fontSize: 12,
     fontWeight: '600',
   },
 
   cardBody: {
     padding: 16,
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
   },
 
   templateName: {
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
   },
 
   templateSubtitle: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 12,
     marginTop: 6,
     lineHeight: 16,
@@ -488,19 +488,19 @@ const styles = StyleSheet.create({
   templateFooter: {
     paddingHorizontal: 14,
     paddingVertical: 12,
-    backgroundColor: '#1A1026',
+    backgroundColor: '#0F0F0F',
   },
 
   recordContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: '#14081E',
+    backgroundColor: '#000000',
   },
 
   recordBtn: {
     marginBottom: 52,
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 56,
     paddingVertical: 18,
     borderRadius: 60,
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   },
 
   recordText: {
-    color: '#fff',
+    color: '#000000',
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 0.6,
@@ -531,14 +531,14 @@ const styles = StyleSheet.create({
     bottom: 130,
     left: 18,
     right: 18,
-    backgroundColor: 'rgba(20,8,30,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.8)',
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#1E1E1E',
   },
   effectTitle: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 12,
     fontWeight: '700',
     marginBottom: 8,
@@ -555,22 +555,22 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: 'rgba(201,181,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   effectChipActive: {
-    backgroundColor: '#9B5CFF',
-    borderColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#FFFFFF',
   },
   effectChipText: {
-    color: '#E2D7FF',
+    color: '#E6E6E6',
     fontSize: 12,
     fontWeight: '600',
   },
   effectChipTextActive: {
-    color: '#fff',
+    color: '#000000',
   },
   previewOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10,8,20,0.35)',
+    backgroundColor: 'rgba(0,0,0,0.35)',
   },
 })

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const EFFECTS = [
@@ -23,13 +23,13 @@ const TOTAL_SECONDS = 30
 const TIMELINE_MARKS = [0, 5, 10, 15, 20, 25, 30]
 
 const EFFECT_COLORS = {
-  auto: { bg: '#5B4B7A', border: '#8C78B8' },
-  normal: { bg: '#3B3B58', border: '#68689A' },
-  fast2: { bg: '#A041FF', border: '#C88BFF' },
-  fast4: { bg: '#C24DFF', border: '#E2A6FF' },
-  slow05: { bg: '#2F89FF', border: '#7AB6FF' },
-  slow025: { bg: '#2166CC', border: '#70A3F0' },
-  boomerang: { bg: '#FF4FA0', border: '#FF9ACA' },
+  auto: { bg: '#3A3A3A', border: '#6F6F6F' },
+  normal: { bg: '#3B3B58', border: '#565656' },
+  fast2: { bg: '#8A8A8A', border: '#B0B0B0' },
+  fast4: { bg: '#9C9C9C', border: '#C8C8C8' },
+  slow05: { bg: '#777777', border: '#9A9A9A' },
+  slow025: { bg: '#606060', border: '#8D8D8D' },
+  boomerang: { bg: '#7A7A7A', border: '#A8A8A8' },
 }
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n))
@@ -149,7 +149,10 @@ const Configuracion = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Icon name="chevron-back" size={22} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>Configuracion</Text>
+        <View style={styles.headerCenter}>
+          <Text style={styles.title}>Configuracion</Text>
+          <Text style={styles.headerSubtitle}>Ajusta tiempos y efectos</Text>
+        </View>
         <View style={styles.backBtn} />
       </View>
 
@@ -164,7 +167,13 @@ const Configuracion = ({ route, navigation }) => {
             <Text style={styles.blockTitle}>Linea de tiempo</Text>
             <Text style={styles.blockPill}>30s</Text>
           </View>
+          <View style={styles.blockMetaRow}>
+            <Text style={styles.blockMeta}>Base: Normal continuo</Text>
+            <Text style={styles.blockMeta}>{effectBlocks.length} efectos</Text>
+          </View>
           <View style={styles.timelineTrack}>
+            <View style={styles.timelineAmbientGlow} pointerEvents="none" />
+            <View style={styles.timelineScanLine} pointerEvents="none" />
             <View style={styles.timelineBase}>
               <Text style={styles.timelineBaseText}>Normal 0-30s</Text>
             </View>
@@ -201,6 +210,17 @@ const Configuracion = ({ route, navigation }) => {
                 style={[
                   styles.timelineGuide,
                   { left: `${(m / TOTAL_SECONDS) * 100}%` },
+                ]}
+              />
+            ))}
+            {TIMELINE_MARKS.map((m) => (
+              <View
+                key={`n_${m}`}
+                pointerEvents="none"
+                style={[
+                  styles.timelineNode,
+                  { left: `${(m / TOTAL_SECONDS) * 100}%` },
+                  (m === 0 || m === 30) && styles.timelineNodeEdge,
                 ]}
               />
             ))}
@@ -254,6 +274,7 @@ const Configuracion = ({ route, navigation }) => {
                 onPress={() => addEffectBlock(item.id)}
                 style={styles.chip}
               >
+                <Icon name="add" size={14} color="#FFFFFF" />
                 <Text style={styles.chipText}>{item.label}</Text>
               </TouchableOpacity>
             ))}
@@ -271,14 +292,16 @@ const Configuracion = ({ route, navigation }) => {
 export default Configuracion
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#14081E' },
+  container: { flex: 1, backgroundColor: '#000000' },
   header: {
     paddingTop: 44,
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingBottom: 8,
   },
+  headerCenter: { alignItems: 'center' },
   backBtn: {
     width: 34,
     height: 34,
@@ -288,17 +311,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   title: { color: '#FFFFFF', fontSize: 20, fontWeight: '700' },
-  content: { padding: 16, gap: 14, paddingBottom: 30 },
+  headerSubtitle: { color: '#AFAFAF', fontSize: 11, marginTop: 2 },
+  content: { padding: 16, gap: 14, paddingBottom: 36 },
   templateTitleCard: {
-    borderRadius: 14,
-    backgroundColor: '#1A1026',
+    borderRadius: 18,
+    backgroundColor: '#0F0F0F',
     borderWidth: 1,
-    borderColor: '#2A163D',
+    borderColor: '#2A2A2A',
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
   templateTitleLabel: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 12,
     marginBottom: 4,
     fontWeight: '600',
@@ -309,94 +333,125 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   block: {
-    backgroundColor: '#1A1026',
-    borderRadius: 14,
+    backgroundColor: '#0F0F0F',
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#2A163D',
-    padding: 12,
+    borderColor: '#2A2A2A',
+    padding: 14,
   },
   blockHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  blockTitle: { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginBottom: 8 },
+  blockTitle: { color: '#FFFFFF', fontSize: 15, fontWeight: '800', marginBottom: 8 },
+  blockMetaRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  blockMeta: { color: '#B5B5B5', fontSize: 12, fontWeight: '600' },
   blockPill: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     borderWidth: 1,
-    borderColor: '#3B2460',
+    borderColor: '#3A3A3A',
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 12,
+    borderRadius: 14,
     fontSize: 12,
     marginBottom: 8,
   },
   timelineBar: { height: 12, borderRadius: 8, overflow: 'hidden', flexDirection: 'row', gap: 3 },
-  timelineSegment: { backgroundColor: '#9B5CFF', borderRadius: 6 },
+  timelineSegment: { backgroundColor: '#FFFFFF', borderRadius: 6 },
   timelineTrack: {
-    height: 74,
-    borderRadius: 14,
-    backgroundColor: '#231636',
+    height: 88,
+    borderRadius: 22,
+    backgroundColor: '#101010',
     borderWidth: 1,
-    borderColor: '#4A2D71',
+    borderColor: '#2F2F2F',
     overflow: 'hidden',
     marginTop: 4,
     justifyContent: 'center',
-    shadowColor: '#7B3FE4',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
+    shadowColor: '#FFFFFF',
+    shadowOpacity: 0.2,
+    shadowRadius: 14,
     shadowOffset: { width: 0, height: 5 },
     elevation: 6,
   },
+  timelineAmbientGlow: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.02)',
+  },
+  timelineScanLine: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    top: '50%',
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
   timelineBase: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 20,
-    bottom: 20,
-    backgroundColor: '#372151',
+    left: 10,
+    right: 10,
+    top: 28,
+    bottom: 28,
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     paddingHorizontal: 12,
-    borderRadius: 9,
-    marginHorizontal: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.14)',
   },
   timelineBaseText: {
-    color: '#EDE3FF',
+    color: '#E5E5E5',
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 0.4,
+    letterSpacing: 0.8,
   },
   timelineBlock: {
     position: 'absolute',
-    top: 10,
-    bottom: 10,
-    borderRadius: 10,
+    top: 18,
+    bottom: 18,
+    borderRadius: 999,
     borderWidth: 1,
     justifyContent: 'center',
-    paddingHorizontal: 7,
+    paddingHorizontal: 10,
     shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
     elevation: 3,
   },
   timelineBlockActive: {
     borderColor: '#FFFFFF',
     shadowColor: '#FFFFFF',
-    shadowOpacity: 0.28,
-    shadowRadius: 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
     shadowOffset: { width: 0, height: 0 },
-    elevation: 8,
+    elevation: 6,
   },
   timelineBlockText: {
     color: '#FFFFFF',
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '700',
     textAlign: 'center',
-    letterSpacing: 0.2,
+    letterSpacing: 0.1,
   },
   timelineGuide: {
     position: 'absolute',
-    top: 0,
-    bottom: 0,
+    bottom: 3,
     width: 1,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    height: 12,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  timelineNode: {
+    position: 'absolute',
+    bottom: 0,
+    marginLeft: -2.5,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#CFCFCF',
+  },
+  timelineNodeEdge: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginLeft: -3,
+    backgroundColor: '#FFFFFF',
   },
   timeMarks: {
     marginTop: 8,
@@ -404,63 +459,73 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   mark: {
-    color: '#C9B5FF',
+    color: '#D6D6D6',
     fontSize: 11,
+    letterSpacing: 0.4,
+    fontWeight: '700',
   },
-  helperText: { color: '#C9B5FF', fontSize: 12, marginTop: 8 },
-  segmentEditor: { marginTop: 10, backgroundColor: '#241735', borderRadius: 10, padding: 10 },
+  helperText: { color: '#D0D0D0', fontSize: 12, marginTop: 8 },
+  segmentEditor: { marginTop: 10, backgroundColor: '#181818', borderRadius: 12, padding: 10, borderWidth: 1, borderColor: '#2A2A2A' },
   adjustRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
-  adjustLabel: { color: '#EADFFF', width: 70, fontSize: 12, fontWeight: '600' },
+  adjustLabel: { color: '#D5D5D5', width: 70, fontSize: 12, fontWeight: '700' },
   adjustBtn: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  adjustBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
+  adjustBtnText: { color: '#000000', fontSize: 16, fontWeight: '800' },
   adjustValue: { color: '#FFFFFF', marginHorizontal: 10, minWidth: 46, textAlign: 'center', fontWeight: '700' },
   removeBtn: {
     marginTop: 10,
     alignSelf: 'flex-start',
-    backgroundColor: '#4A2444',
+    backgroundColor: '#262626',
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 7,
   },
-  removeBtnText: { color: '#FFD9E8', fontSize: 12, fontWeight: '700' },
+  removeBtnText: { color: '#FFD3D3', fontSize: 12, fontWeight: '700' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: {
     paddingHorizontal: 10,
     paddingVertical: 7,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(201,181,255,0.25)',
+    borderColor: 'rgba(255,255,255,0.3)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
-  chipActive: { backgroundColor: '#9B5CFF', borderColor: '#9B5CFF' },
-  chipText: { color: '#E2D7FF', fontSize: 12, fontWeight: '600' },
-  chipTextActive: { color: '#FFFFFF' },
+  chipActive: { backgroundColor: '#FFFFFF', borderColor: '#FFFFFF' },
+  chipText: { color: '#E6E6E6', fontSize: 12, fontWeight: '600' },
+  chipTextActive: { color: '#000000' },
   filterRow: { gap: 10, paddingTop: 4 },
   filterCard: {
     width: 95,
     borderRadius: 12,
-    backgroundColor: '#241735',
+    backgroundColor: '#181818',
     borderWidth: 1,
-    borderColor: '#3B2460',
+    borderColor: '#2A2A2A',
     overflow: 'hidden',
   },
-  filterCardActive: { borderColor: '#9B5CFF' },
+  filterCardActive: { borderColor: '#FFFFFF' },
   filterImage: { width: '100%', height: 62 },
-  noneFilter: { backgroundColor: '#1A1026', alignItems: 'center', justifyContent: 'center' },
+  noneFilter: { backgroundColor: '#0F0F0F', alignItems: 'center', justifyContent: 'center' },
   filterLabel: { color: '#FFFFFF', fontSize: 11, fontWeight: '600', padding: 8, textAlign: 'center' },
   recordBtn: {
-    marginTop: 4,
-    backgroundColor: '#9B5CFF',
-    borderRadius: 18,
-    paddingVertical: 14,
+    marginTop: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 16,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
   },
-  recordBtnText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  recordBtnText: { color: '#000000', fontSize: 17, fontWeight: '700' },
 })

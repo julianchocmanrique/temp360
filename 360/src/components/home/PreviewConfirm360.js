@@ -41,7 +41,7 @@ const PreviewConfirm360 = ({ route, navigation }) => {
           style={styles.actionButtonSecondary}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.actionText}>Repetir</Text>
+          <Text style={styles.actionTextSecondary}>Repetir</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -56,7 +56,7 @@ const PreviewConfirm360 = ({ route, navigation }) => {
             })
           }
         >
-          <Text style={styles.actionText}>Aceptar</Text>
+          <Text style={styles.actionTextPrimary}>Aceptar</Text>
         </TouchableOpacity>
       </View>
 
@@ -69,7 +69,7 @@ export default PreviewConfirm360
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#14081E',
+    backgroundColor: '#000000',
   },
 
   frame: {
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
 
   backText: {
-    color: '#C9B5FF',
+    color: '#D0D0D0',
     fontSize: 24,
     fontWeight: '700',
   },
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     minWidth: 140,
     paddingVertical: 14,
     borderRadius: 30,
-    backgroundColor: '#9B5CFF',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
 
@@ -122,9 +122,9 @@ const styles = StyleSheet.create({
     minWidth: 140,
     paddingVertical: 14,
     borderRadius: 30,
-    backgroundColor: '#2A163D',
+    backgroundColor: '#1E1E1E',
     borderWidth: 1,
-    borderColor: '#3B2460',
+    borderColor: '#2A2A2A',
     justifyContent: 'center',
     alignItems: 'center',
 
@@ -135,8 +135,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
   },
 
-  actionText: {
-    color: '#fff',
+  actionTextPrimary: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  actionTextSecondary: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
